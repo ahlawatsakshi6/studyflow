@@ -49,6 +49,7 @@ services:
   #--------------------------------
   - type: static
     name: studyflow-frontend
+    env: static
     # The root directory for the frontend React app
     rootDir: ./studyflow
     # Build command to install dependencies and create a production build
