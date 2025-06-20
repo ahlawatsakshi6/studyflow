@@ -1,0 +1,62 @@
+# render.yaml
+# Blueprint for deploying the StudyFlow application on Render.
+# This file defines the services for the backend server and the frontend client.
+#
+# How to use:
+# 1. Commit this file to your GitHub repository.
+# 2. Go to https://dashboard.render.com/blueprints
+# 3. Click "New Blueprint Instance" and select your repository.
+# 4. Render will automatically detect this file and set up the services.
+# 5. Add your environment variables in the Render dashboard.
+
+services:
+  #--------------------------------
+  # Backend Server (Node.js/Express)
+  #--------------------------------
+  - type: web
+    name: studyflow-server
+    env: node
+    # The root directory for the backend server code
+    rootDir: ./server
+    # Build command to install dependencies
+    buildCommand: npm install
+    # Start command to run the server
+    startCommand: npm start
+    # Health check to ensure the server is running
+    healthCheckPath: /api/health
+    # Define environment variables that the server needs.
+    # IMPORTANT: Add your actual secret values in the Render dashboard, not here.
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GMAIL_USER
+        # This will be pulled from your Render environment group
+        fromGroup: studyflow-secrets
+      - key: GMAIL_PASS
+        # This will be pulled from your Render environment group
+        fromGroup: studyflow-secrets
+      - key: PORT
+        value: 5000
+      - key: CORS_ORIGIN
+        # This will be the URL of your deployed frontend
+        fromService:
+          type: static
+          name: studyflow-frontend
+          property: url
+
+  #--------------------------------
+  # Frontend Client (React)
+  #--------------------------------
+  - type: static
+    name: studyflow-frontend
+    # The root directory for the frontend React app
+    rootDir: ./studyflow
+    # Build command to install dependencies and create a production build
+    buildCommand: npm install && npm run build
+    # The directory where the built static files are located
+    publishDir: ./build
+    # Rewrite all requests to index.html for client-side routing
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html 
