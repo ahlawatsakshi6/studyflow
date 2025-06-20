@@ -40,17 +40,15 @@ services:
       - key: CORS_ORIGIN
         # This will be the URL of your deployed frontend
         fromService:
-          type: static
+          type: static_site
           name: studyflow-frontend
           property: url
 
   #--------------------------------
   # Frontend Client (React)
   #--------------------------------
-  - type: static
+  - type: static_site
     name: studyflow-frontend
-    env: static
-    # The root directory for the frontend React app
     rootDir: ./studyflow
     # Build command to install dependencies and create a production build
     buildCommand: npm install && npm run build
